@@ -15,7 +15,8 @@ const player = {
     y: canvas.height / 2 - paddleHeight / 2,
     width: paddleWidth,
     height: paddleHeight,
-    dy: 0
+    dy: 0,
+    score: 0
 };
 
 const computer = {
@@ -23,7 +24,8 @@ const computer = {
     y: canvas.height / 2 - paddleHeight / 2,
     width: paddleWidth,
     height: paddleHeight,
-    dy: 0
+    dy: 0,
+    score: 0
 };
 
 // Définition de la balle
@@ -51,9 +53,20 @@ function drawBall(x, y, radius) {
     ctx.fill();
 }
 
+// Afficher les scores
+function drawScore() {
+    ctx.fillStyle = '#FFF';
+    ctx.font = '35px Arial';
+    ctx.fillText(player.score, canvas.width / 4, 50);
+    ctx.fillText(computer.score, 3 * canvas.width / 4, 50);
+}
+
 // Mise à jour de la position des raquettes
 function updatePaddlePosition() {
     player.y += player.dy;
+
+    // Mouvement de la raquette de l'ordinateur
+    computer.dy = (ball.y - (computer.y + paddleHeight / 2)) * 0.09; // Ajustez la valeur 0.09 pour modifier la difficulté
     computer.y += computer.dy;
 
     // Limiter la position des raquettes dans les limites du canvas
@@ -77,12 +90,27 @@ function updateBallPosition() {
     if (ball.x - ball.radius < player.x + player.width && ball.y > player.y && ball.y < player.y + player.height) {
         ball.dx = -ball.dx;
         ball.x = player.x + player.width + ball.radius; // Ajustement pour empêcher la balle de sortir du canvas
-    }
-
-    if (ball.x + ball.radius > computer.x && ball.y > computer.y && ball.y < computer.y + computer.height) {
+    } else if (ball.x + ball.radius > computer.x && ball.y > computer.y && ball.y < computer.y + computer.height) {
         ball.dx = -ball.dx;
         ball.x = computer.x - ball.radius; // Ajustement pour empêcher la balle de sortir du canvas
     }
+
+    // Points
+    if (ball.x + ball.radius < 0) { // Si le joueur manque la balle
+        computer.score++;
+        resetBall();
+    } else if (ball.x - ball.radius > canvas.width) { // Si l'ordinateur manque la balle
+        player.score++;
+        resetBall();
+    }
+}
+
+// Réinitialiser la position de la balle
+function resetBall() {
+    ball.x = canvas.width / 2;
+    ball.y = canvas.height / 2;
+    ball.dx = 4;
+    ball.dy = 4;
 }
 
 // Dessiner le jeu
@@ -91,6 +119,7 @@ function draw() {
     drawPaddle(player.x, player.y, player.width, player.height);
     drawPaddle(computer.x, computer.y, computer.width, computer.height);
     drawBall(ball.x, ball.y, ball.radius);
+    drawScore();
 }
 
 // Boucle de jeu
@@ -111,5 +140,6 @@ document.addEventListener('keyup', function (event) {
     if (event.key === 'ArrowUp' || event.key === 'ArrowDown') player.dy = 0;
 });
 
-// Lance le jeu
+// Lancer le jeu
 gameLoop();
+
