@@ -8,7 +8,7 @@ canvas.height = 400;
 // Définition des raquettes
 const paddleWidth = 10;
 const paddleHeight = 100;
-const paddleGap = 5;
+const paddleGap = 10;
 
 const player = {
     x: paddleGap,
@@ -33,7 +33,7 @@ const ball = {
     x: canvas.width / 2,
     y: canvas.height / 2,
     radius: 10,
-    speed: 2,
+    speed: 4,
     dx: 4,
     dy: 4
 };
@@ -66,7 +66,7 @@ function updatePaddlePosition() {
     player.y += player.dy;
 
     // Mouvement de la raquette de l'ordinateur
-    computer.dy = (ball.y - (computer.y + paddleHeight / 2)) * 0.09;
+    computer.dy = (ball.y - (computer.y + paddleHeight / 2)) * 0.09; // Ajustez la valeur 0.09 pour modifier la difficulté
     computer.y += computer.dy;
 
     // Limiter la position des raquettes dans les limites du canvas
@@ -89,17 +89,17 @@ function updateBallPosition() {
     // Rebond de la balle sur les raquettes
     if (ball.x - ball.radius < player.x + player.width && ball.y > player.y && ball.y < player.y + player.height) {
         ball.dx = -ball.dx;
-        ball.x = player.x + player.width + ball.radius;
+        ball.x = player.x + player.width + ball.radius; // Ajustement pour empêcher la balle de sortir du canvas
     } else if (ball.x + ball.radius > computer.x && ball.y > computer.y && ball.y < computer.y + computer.height) {
         ball.dx = -ball.dx;
-        ball.x = computer.x - ball.radius;
+        ball.x = computer.x - ball.radius; // Ajustement pour empêcher la balle de sortir du canvas
     }
 
     // Points
-    if (ball.x + ball.radius < 0) {
+    if (ball.x + ball.radius < 0) { // Si le joueur manque la balle
         computer.score++;
         resetBall();
-    } else if (ball.x - ball.radius > canvas.width) {
+    } else if (ball.x - ball.radius > canvas.width) { // Si l'ordinateur manque la balle
         player.score++;
         resetBall();
     }
@@ -142,3 +142,4 @@ document.addEventListener('keyup', function (event) {
 
 // Lancer le jeu
 gameLoop();
+
